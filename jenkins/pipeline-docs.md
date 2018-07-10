@@ -20,3 +20,38 @@ pipeline {
     }
 }
 ```
+
+### Using multiple agents
+
+Pipeline allows the use of multiple agents within the same _Jenkinsfile_
+
+### Executing in parallel
+
+By default pipeline stages and steps are synchronous, by using parrallel we can save sometime in case our stages are independent from each other
+
+```
+stage('Build') {
+    /* .. snip .. */
+}
+
+stage('Test') {
+    parallel linux: {
+        node('linux') {
+            checkout scm
+            try {
+                unstash 'app'
+                sh 'make check'
+            }
+            finally {
+                junit '**/target/*.xml'
+            }
+        }
+    },
+    windows: {
+        node('windows') {
+            /* .. snip .. */
+        }
+    }
+}
+```
+
